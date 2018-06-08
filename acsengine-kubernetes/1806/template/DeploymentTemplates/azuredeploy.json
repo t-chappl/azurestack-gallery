@@ -33,6 +33,18 @@
         "description": "This must be a region-unique name e.g. k8s-12345. Try to chose it same as the resource group name as best practice."
       }
     },
+    "masterProfileCount": {
+      "allowedValues": [
+        1,
+        2,
+        3
+      ],
+      "defaultValue": 1,
+      "metadata": {
+        "description": "The number of master nodes for the Kubernetes cluster. This value can be from 1 to 3."
+      },
+      "type": "int"
+    },
     "agentPoolProfileCount": {
       "allowedValues": [
         1,
@@ -105,7 +117,7 @@
     "sshKeyPath": "[concat('/home/',parameters('linuxAdminUsername'),'/.ssh/authorized_keys')]",
     "tenantSubscriptionId": "[subscription().subscriptionId]",
     "scriptName": "script",
-    "scriptParameters": "[concat(variables('resourceGroupName'), ' ', parameters('tenantArmEndpoint'), ' ', parameters('tenantId'), ' ', variables('tenantSubscriptionId'), ' ', parameters('linuxAdminUsername'), ' ', parameters('masterProfileDnsPrefix'), ' ', parameters('agentPoolProfileCount'), ' ', parameters('servicePrincipalClientId'), ' ', parameters('servicePrincipalClientSecret'), ' ', parameters('kubernetesAzureCloudProviderVersion'), ' ', variables('location'), ' ', parameters('sshPublicKey'))]"
+    "scriptParameters": "[concat(variables('resourceGroupName'), ' ', parameters('tenantArmEndpoint'), ' ', parameters('tenantId'), ' ', variables('tenantSubscriptionId'), ' ', parameters('linuxAdminUsername'), ' ', parameters('masterProfileDnsPrefix'), ' ', parameters('masterProfileCount'), ' ', parameters('agentPoolProfileCount'), ' ', parameters('servicePrincipalClientId'), ' ', parameters('servicePrincipalClientSecret'), ' ', parameters('kubernetesAzureCloudProviderVersion'), ' ', variables('location'), ' ', parameters('sshPublicKey'))]"
   },
   "resources": [
     {

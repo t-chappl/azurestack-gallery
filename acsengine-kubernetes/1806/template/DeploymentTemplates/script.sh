@@ -15,12 +15,13 @@ TENANT_ID=${3}
 TENANT_SUBSCRIPTION_ID=${4}
 ADMIN_USERNAME=${5}
 MASTER_DNS_PREFIX=${6}
-AGENT_COUNT=${7}
-SPN_CLIENT_ID=${8}
-SPN_CLIENT_SECRET=${9}
-K8S_AZURE_CLOUDPROVIDER_VERSION=${10}
-REGION_NAME=${11}
-SSH_PUBLICKEY="${12} ${13} ${14}"
+MASTER_COUNT=${7}
+AGENT_COUNT=${8}
+SPN_CLIENT_ID=${9}
+SPN_CLIENT_SECRET=${10}
+K8S_AZURE_CLOUDPROVIDER_VERSION=${11}
+REGION_NAME=${12}
+SSH_PUBLICKEY="${13} ${14} ${15}"
 
 echo "RESOURCE_GROUP_NAME: $RESOURCE_GROUP_NAME"
 echo "TENANT_ENDPOINT: $TENANT_ENDPOINT"
@@ -28,6 +29,7 @@ echo "TENANT_ID: $TENANT_ID"
 echo "TENANT_SUBSCRIPTION_ID: $TENANT_SUBSCRIPTION_ID"
 echo "ADMIN_USERNAME: $ADMIN_USERNAME"
 echo "MASTER_DNS_PREFIX: $MASTER_DNS_PREFIX"
+echo "MASTER_COUNT: $MASTER_COUNT"
 echo "AGENT_COUNT: $AGENT_COUNT"
 echo "SPN_CLIENT_ID: $SPN_CLIENT_ID"
 echo "SPN_CLIENT_SECRET: $SPN_CLIENT_SECRET"
@@ -53,7 +55,7 @@ echo "Update the system."
 retrycmd_if_failure 5 10 sudo apt-get update -y
 
 echo "Installing Azure CLI"
-INSTALL_SCRIPT_URL="https://raw.githubusercontent.com/msazurestackworkloads/azurestack-gallery/master/acsengine-kubernetes/1804/template/DeploymentTemplates/install.py"
+INSTALL_SCRIPT_URL="https://raw.githubusercontent.com/msazurestackworkloads/azurestack-gallery/master/acsengine-kubernetes/1806/template/DeploymentTemplates/install.py"
 wget $INSTALL_SCRIPT_URL
 if ! command -v python >/dev/null 2>&1
 then
@@ -78,8 +80,8 @@ echo 'Retrieve the AzureStack root CA certificate thumbprint'
 THUMBPRINT=$(openssl x509 -in /var/lib/waagent/Certificates.pem -fingerprint -noout | cut -d'=' -f 2 | tr -d :)
 echo 'Thumbprint for AzureStack root CA certificate:' $THUMBPRINT
 
-echo "Cloning the ACS-Engine repo/branch: msazurestackworkloads, acs-engine-v0140-1804"
-git clone https://github.com/msazurestackworkloads/acs-engine -b acs-engine-v0140-1804
+echo "Cloning the ACS-Engine repo/branch: msazurestackworkloads, acs-engine-v0140-1806"
+git clone https://github.com/msazurestackworkloads/acs-engine -b acs-engine-v0140-1806
 cd acs-engine
 
 echo "We are going to use an existing ACS-Engine binary."
@@ -124,7 +126,7 @@ echo 'Register to the cloud.'
 echo "Set the current cloud to be $ENVIRONMENT_NAME"
 /root/bin/az cloud set --name $ENVIRONMENT_NAME
 
-/root/bin/az cloud update --name $ENVIRONMENT_NAME --endpoint-active-directory "https://login.windows.net"
+az cloud update --name $ENVIRONMENT_NAME --endpoint-active-directory "https://login.windows.net"
 
 ENDPOINT_ACTIVE_DIRECTORY_RESOURCEID=$(/root/bin/az cloud show | jq '.endpoints.activeDirectoryResourceId' | tr -d \")
 ENDPOINT_GALLERY=$(/root/bin/az cloud show | jq '.endpoints.gallery' | tr -d \")
@@ -157,6 +159,7 @@ jq --arg SUFFIXES_KEYVAULT_DNS $SUFFIXES_KEYVAULT_DNS '.properties.cloudProfile.
 jq --arg FQDN_ENDPOINT_SUFFIX $FQDN_ENDPOINT_SUFFIX '.properties.cloudProfile.resourceManagerVMDNSSuffix = $FQDN_ENDPOINT_SUFFIX' | \
 jq --arg REGION_NAME $REGION_NAME '.properties.cloudProfile.location = $REGION_NAME' | \
 jq --arg MASTER_DNS_PREFIX $MASTER_DNS_PREFIX '.properties.masterProfile.dnsPrefix = $MASTER_DNS_PREFIX' | \
+jq '.properties.masterProfile.count'=$MASTER_COUNT | \
 jq '.properties.agentPoolProfiles[0].count'=$AGENT_COUNT | \
 jq --arg ADMIN_USERNAME $ADMIN_USERNAME '.properties.linuxProfile.adminUsername = $ADMIN_USERNAME' | \
 jq --arg SSH_PUBLICKEY "${SSH_PUBLICKEY}" '.properties.linuxProfile.ssh.publicKeys[0].keyData = $SSH_PUBLICKEY' | \

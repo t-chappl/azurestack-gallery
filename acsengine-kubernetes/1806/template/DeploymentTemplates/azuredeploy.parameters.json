@@ -17,6 +17,9 @@
       "masterProfileDnsPrefix": {
         "value": ""
       },
+      "masterProfileCount": {
+        "value": "1"
+      },
       "agentPoolProfileCount": {
         "value": "2"
       },
