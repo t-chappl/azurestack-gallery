@@ -36,12 +36,11 @@
     "masterProfileCount": {
       "allowedValues": [
         1,
-        2,
         3
       ],
       "defaultValue": 1,
       "metadata": {
-        "description": "The number of master nodes for the Kubernetes cluster. This value can be from 1 to 3."
+        "description": "The number of master nodes for the Kubernetes cluster. This value can be from 1 or 3."
       },
       "type": "int"
     },
