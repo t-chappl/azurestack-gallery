@@ -338,6 +338,9 @@ ENDPOINT_PORTAL=`echo $METADATA | jq '.portalEndpoint' | xargs`
 log_level -i "ENDPOINT_PORTAL: $ENDPOINT_PORTAL"
 
 if [ $IDENTITY_SYSTEM == "ADFS" ]; then
+    log_level -i "Setting ADFS specific cluster definition properties."
+    IDENTITY_SYSTEM_LOWER="adfs"
+    
     # Trim "adfs" suffix
     ENDPOINT_ACTIVE_DIRECTORY_ENDPOINT=`echo $METADATA | jq '.authentication.loginEndpoint' | xargs | sed -e 's/adfs*$//' | xargs`
 else
@@ -363,15 +366,8 @@ jq --arg ADMIN_USERNAME $ADMIN_USERNAME '.properties.linuxProfile.adminUsername 
 jq --arg SSH_PUBLICKEY "${SSH_PUBLICKEY}" '.properties.linuxProfile.ssh.publicKeys[0].keyData = $SSH_PUBLICKEY' | \
 jq --arg SPN_CLIENT_ID $SPN_CLIENT_ID '.properties.servicePrincipalProfile.clientId = $SPN_CLIENT_ID' | \
 jq --arg SPN_CLIENT_SECRET $SPN_CLIENT_SECRET '.properties.servicePrincipalProfile.secret = $SPN_CLIENT_SECRET' \
+jq --arg IDENTITY_SYSTEM_LOWER $IDENTITY_SYSTEM_LOWER '.properties.customCloudProfile.identitySystem=$IDENTITY_SYSTEM_LOWER' | \
 > $AZURESTACK_CONFIGURATION_TEMP
-
-validate_and_restore_cluster_definition $AZURESTACK_CONFIGURATION_TEMP $AZURESTACK_CONFIGURATION || exit $ERR_API_MODEL
-
-if [ $IDENTITY_SYSTEM == "ADFS" ]; then
-    log_level -i "Setting ADFS specific cluster definition properties."
-    ADFS="adfs"
-    IDENTITY_SYSTEM_LOWER=$ADFS
-fi 
 
 validate_and_restore_cluster_definition $AZURESTACK_CONFIGURATION_TEMP $AZURESTACK_CONFIGURATION || exit $ERR_API_MODEL
 
