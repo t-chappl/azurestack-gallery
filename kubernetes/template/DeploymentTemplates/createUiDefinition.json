@@ -354,7 +354,7 @@
         "name": "linuxAvailabilityProfile",
         "type": "Microsoft.Common.DropDown",
         "label": "Linux node pool availability profile",
-        "defaultValue": "AvailabilitySet",
+        "defaultValue": "Availability Set",
         "toolTip": "This is the availability profile that the Linux nodes in the Kubernetes cluster will be deployed with",
         "constraints": {
           "allowedValues": [
@@ -531,7 +531,7 @@
         "name": "windowsAvailabilityProfile",
         "type": "Microsoft.Common.DropDown",
         "label": "Windows node pool availability profile",
-        "defaultValue": "AvailabilitySet",
+        "defaultValue": "Availability Set",
         "toolTip": "This is the availability profile that the Windows nodes in the Kubernetes cluster will be deployed with",
         "constraints": {
           "allowedValues": [
