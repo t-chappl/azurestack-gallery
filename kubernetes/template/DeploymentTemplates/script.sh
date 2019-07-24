@@ -398,7 +398,7 @@ elif [ $OS_TYPE == "hybrid" ]; then
     jq '.properties.agentPoolProfiles[0].count'=$LINUX_AGENT_COUNT | \
     jq --arg LINUX_AGENT_SIZE $LINUX_AGENT_SIZE '.properties.agentPoolProfiles[0].vmSize=$LINUX_AGENT_SIZE' | \
     jq --arg LINUX_AVAILABILITY_PROFILE $LINUX_AVAILABILITY_PROFILE '.properties.agentPoolProfiles[0].availabilityProfile=$LINUX_AVAILABILITY_PROFILE' | \
-    jq --arg NODE_DISTRO $NODE_DISTRO '.properties.agentPoolProfiles[0].distro=$NODE_DISTRO' \
+    jq --arg NODE_DISTRO $NODE_DISTRO '.properties.agentPoolProfiles[0].distro=$NODE_DISTRO' | \
     jq '.properties.agentPoolProfiles[1].count'=$WINDOWS_AGENT_COUNT | \
     jq --arg WINDOWS_AGENT_SIZE $WINDOWS_AGENT_SIZE '.properties.agentPoolProfiles[1].vmSize=$WINDOWS_AGENT_SIZE' | \
     jq --arg WINDOWS_AVAILABILITY_PROFILE $WINDOWS_AVAILABILITY_PROFILE '.properties.agentPoolProfiles[1].availabilityProfile=$WINDOWS_AVAILABILITY_PROFILE' | \
