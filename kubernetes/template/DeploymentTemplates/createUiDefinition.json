@@ -269,9 +269,9 @@
       {
         "name": "linuxPoolProfileVMSize",
         "type": "Microsoft.Common.DropDown",
-        "label": "The VMSize of Kubernetes node VMs",
+        "label": "The VMSize of Kubernetes Linux node VMs",
         "defaultValue": "Standard_D2_v2",
-        "toolTip": "The VMSize of Kubernetes node VMs",
+        "toolTip": "The VMSize of Kubernetes Linux node VMs",
         "constraints": {
           "allowedValues": [
             {
