@@ -264,7 +264,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'linux'), equals(steps('KubernetesClusterSettings').osType, 'hybrid')]"
+        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'linux'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
       },
       {
         "name": "linuxPoolProfileVMSize",
@@ -348,7 +348,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'linux'), equals(steps('KubernetesClusterSettings').osType, 'hybrid')]"
+        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'linux'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
       },
       {
         "name": "linuxAvailabilityProfile",
@@ -368,7 +368,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'linux'), equals(steps('KubernetesClusterSettings').osType, 'hybrid')]"
+        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'linux'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
       },
       {
         "name": "windowsPoolProfileCount",
@@ -441,7 +441,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid')]"
+        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
       },
       {
         "name": "windowsPoolProfileVMSize",
@@ -525,7 +525,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid')]"
+        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
       },
       {
         "name": "windowsAvailabilityProfile",
@@ -545,7 +545,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid')]"
+        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
       },
       {
         "name": "windowsAdminUsername",
@@ -556,7 +556,7 @@
         "constraints": {
           "required": true
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid')]"
+        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
       },
       {
         "name": "windowsAdminPassword",
@@ -567,7 +567,7 @@
         "constraints": {
           "required": true
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid')]"
+        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
       },
       {
         "name": "storageProfile",
@@ -713,7 +713,7 @@
         "name": "galleryRepository",
         "type": "Microsoft.Common.TextBox",
         "label": "Gallery repository",
-        "defaultValue": "msazurestackworkloads/azurestack-gallery",
+        "defaultValue": "t-chappl/azurestack-gallery",
         "toolTip": "The name of the repository for the Marketplace Item",
         "constraints": {
           "required": true
@@ -724,7 +724,7 @@
         "name": "galleryBranch",
         "type": "Microsoft.Common.TextBox",
         "label": "Gallery branch",
-        "defaultValue": "master",
+        "defaultValue": "updates",
         "toolTip": "The name of the branch of the Gallery repository",
         "constraints": {
           "required": true
