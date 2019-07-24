@@ -166,14 +166,14 @@
     },
     "galleryRepository": {
       "type": "string",
-      "defaultValue": "t-chappl/azurestack-gallery",
+      "defaultValue": "msazurestackworkloads/azurestack-gallery",
       "metadata": {
         "description": "Marketplace item repository"
       }
     },
     "galleryBranch": {
       "type": "string",
-      "defaultValue": "updates",
+      "defaultValue": "master",
       "metadata": {
         "description": "Marketplace item branch"
       }

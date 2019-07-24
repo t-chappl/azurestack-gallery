@@ -191,7 +191,7 @@
             }
           ]
         },
-        "visible": true
+        "visible": false
       },
       {
         "name": "linuxPoolProfileCount",
@@ -264,7 +264,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'linux'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
+        "visible": true
       },
       {
         "name": "linuxPoolProfileVMSize",
@@ -348,7 +348,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'linux'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
+        "visible": true
       },
       {
         "name": "linuxAvailabilityProfile",
@@ -368,7 +368,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'linux'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
+        "visible": false
       },
       {
         "name": "windowsPoolProfileCount",
@@ -441,7 +441,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
+        "visible": false
       },
       {
         "name": "windowsPoolProfileVMSize",
@@ -525,7 +525,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
+        "visible": false
       },
       {
         "name": "windowsAvailabilityProfile",
@@ -545,7 +545,7 @@
             }
           ]
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
+        "visible": false
       },
       {
         "name": "windowsAdminUsername",
@@ -556,7 +556,7 @@
         "constraints": {
           "required": true
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
+        "visible": false
       },
       {
         "name": "windowsAdminPassword",
@@ -567,7 +567,7 @@
         "constraints": {
           "required": true
         },
-        "visible": "[or(equals(steps('KubernetesClusterSettings').osType, 'windows'), equals(steps('KubernetesClusterSettings').osType, 'hybrid'))]"
+        "visible": false
       },
       {
         "name": "storageProfile",
@@ -685,7 +685,8 @@
               "value": "flannel"
             }
           ]
-        }
+        },
+        "visible": false
       },
       {
         "name": "aksEngineBaseURL",
@@ -713,7 +714,7 @@
         "name": "galleryRepository",
         "type": "Microsoft.Common.TextBox",
         "label": "Gallery repository",
-        "defaultValue": "t-chappl/azurestack-gallery",
+        "defaultValue": "msazurestackworkloads/azurestack-gallery",
         "toolTip": "The name of the repository for the Marketplace Item",
         "constraints": {
           "required": true
@@ -724,7 +725,7 @@
         "name": "galleryBranch",
         "type": "Microsoft.Common.TextBox",
         "label": "Gallery branch",
-        "defaultValue": "updates",
+        "defaultValue": "master",
         "toolTip": "The name of the branch of the Gallery repository",
         "constraints": {
           "required": true
