@@ -124,6 +124,12 @@ download_akse()
         log_level -e "Expected location: $AKSE_LOCATION"
         exit 1
     fi
+
+    if [ -z "$DEFINITION_TEMPLATE_NAME" ]; then 
+        log_level -i "DEFINITION_TEMPLATE_NAME not set"
+        DEFINITION_TEMPLATE_NAME="clusterDefinition_$OS_TYPE.json"
+        log_level -i "DEFINITION_TEMPLATE_NAME set to $DEFINITION_TEMPLATE_NAME"
+    fi
     
     TEMPLATE_URL="https://raw.githubusercontent.com/$GALLERY_REPO/$GALLERY_BRANCH/kubernetes/template/DeploymentTemplates/$DEFINITION_TEMPLATE_NAME"
     curl --retry 5 --retry-delay 10 --max-time 60 -s -f -O $TEMPLATE_URL || exit $ERR_TEMPLATE_DOWNLOAD
@@ -218,9 +224,6 @@ log_level -i "System information: $(uname -a)"
 log_level -i "------------------------------------------------------------------------"
 log_level -i "ARM parameters"
 log_level -i "------------------------------------------------------------------------"
-log_level -i "ADMIN_USERNAME:                           $ADMIN_USERNAME"
-log_level -i "AGENT_COUNT:                              $AGENT_COUNT"
-log_level -i "AGENT_SIZE:                               $AGENT_SIZE"
 log_level -i "AKSE_BASE_URL                             $AKSE_BASE_URL"
 log_level -i "AKSE_RELEASE_VERSION                      $AKSE_RELEASE_VERSION"
 log_level -i "DEFINITION_TEMPLATE_NAME:                 $DEFINITION_TEMPLATE_NAME"
@@ -229,10 +232,16 @@ log_level -i "GALLERY_REPO:                             $GALLERY_REPO"
 log_level -i "IDENTITY_SYSTEM:                          $IDENTITY_SYSTEM"
 log_level -i "K8S_AZURE_CLOUDPROVIDER_VERSION:          $K8S_AZURE_CLOUDPROVIDER_VERSION"
 log_level -i "K8S_IMAGE_BASE                            $K8S_IMAGE_BASE"
+log_level -i "LINUX_ADMIN_USERNAME:                     $LINUX_ADMIN_USERNAME"
+log_level -i "LINUX_AGENT_COUNT:                        $LINUX_AGENT_COUNT"
+log_level -i "LINUX_AGENT_SIZE:                         $LINUX_AGENT_SIZE"
+log_level -i "LINUX_AVAILABILITY_PROFILE:               $LINUX_AVAILABILITY_PROFILE"
 log_level -i "MASTER_COUNT:                             $MASTER_COUNT"
 log_level -i "MASTER_DNS_PREFIX:                        $MASTER_DNS_PREFIX"
 log_level -i "MASTER_SIZE:                              $MASTER_SIZE"
+log_level -i "NETWORK_PLUGIN                            $NETWORK_PLUGIN"
 log_level -i "NODE_DISTRO:                              $NODE_DISTRO"
+log_level -i "OS_TYPE:                                  $OS_TYPE"
 log_level -i "PUBLICIP_DNS:                             $PUBLICIP_DNS"
 log_level -i "PUBLICIP_FQDN:                            $PUBLICIP_FQDN"
 log_level -i "REGION_NAME:                              $REGION_NAME"
@@ -243,6 +252,11 @@ log_level -i "SSH_PUBLICKEY:                            ----"
 log_level -i "STORAGE_PROFILE:                          $STORAGE_PROFILE"
 log_level -i "TENANT_ID:                                $TENANT_ID"
 log_level -i "TENANT_SUBSCRIPTION_ID:                   $TENANT_SUBSCRIPTION_ID"
+log_level -i "WINDOWS_ADMIN_USERNAME:                   $WINDOWS_ADMIN_USERNAME"
+log_level -i "WINDOWS_ADMIN_PASSWORD:                   ----"
+log_level -i "WINDOWS_AGENT_COUNT:                      $WINDOWS_AGENT_COUNT"
+log_level -i "WINDOWS_AGENT_SIZE:                       $WINDOWS_AGENT_SIZE"
+log_level -i "WINDOWS_AVAILABILITY_PROFILE:             $WINDOWS_AVAILABILITY_PROFILE"
 
 log_level -i "------------------------------------------------------------------------"
 log_level -i "Constants"
@@ -343,22 +357,57 @@ jq --arg ENDPOINT_PORTAL $ENDPOINT_PORTAL '.properties.customCloudProfile.portal
 jq --arg REGION_NAME $REGION_NAME '.location = $REGION_NAME' | \
 jq --arg MASTER_DNS_PREFIX $MASTER_DNS_PREFIX '.properties.masterProfile.dnsPrefix = $MASTER_DNS_PREFIX' | \
 jq --arg NODE_DISTRO $NODE_DISTRO '.properties.masterProfile.distro = $NODE_DISTRO' | \
-jq '.properties.agentPoolProfiles[0].count'=$AGENT_COUNT | \
-jq --arg AGENT_SIZE $AGENT_SIZE '.properties.agentPoolProfiles[0].vmSize=$AGENT_SIZE' | \
-jq --arg NODE_DISTRO $NODE_DISTRO '.properties.agentPoolProfiles[0].distro=$NODE_DISTRO' | \
 jq '.properties.masterProfile.count'=$MASTER_COUNT | \
 jq --arg MASTER_SIZE $MASTER_SIZE '.properties.masterProfile.vmSize=$MASTER_SIZE' | \
-jq --arg ADMIN_USERNAME $ADMIN_USERNAME '.properties.linuxProfile.adminUsername = $ADMIN_USERNAME' | \
+jq --arg LINUX_ADMIN_USERNAME $LINUX_ADMIN_USERNAME '.properties.linuxProfile.adminUsername = $LINUX_ADMIN_USERNAME' | \
 jq --arg SSH_PUBLICKEY "${SSH_PUBLICKEY}" '.properties.linuxProfile.ssh.publicKeys[0].keyData = $SSH_PUBLICKEY' | \
 jq --arg AUTH_METHOD $AUTH_METHOD '.properties.customCloudProfile.authenticationMethod=$AUTH_METHOD' | \
 jq --arg SPN_CLIENT_ID $SPN_CLIENT_ID '.properties.servicePrincipalProfile.clientId = $SPN_CLIENT_ID' | \
 jq --arg SPN_CLIENT_SECRET $SPN_CLIENT_SECRET '.properties.servicePrincipalProfile.secret = $SPN_CLIENT_SECRET' | \
 jq --arg IDENTITY_SYSTEM_LOWER $IDENTITY_SYSTEM_LOWER '.properties.customCloudProfile.identitySystem=$IDENTITY_SYSTEM_LOWER' | \
 jq --arg K8S_VERSION $K8S_AZURE_CLOUDPROVIDER_VERSION '.properties.orchestratorProfile.orchestratorRelease=$K8S_VERSION' | \
-jq --arg K8S_IMAGE_BASE $K8S_IMAGE_BASE '.properties.orchestratorProfile.kubernetesConfig.kubernetesImageBase=$K8S_IMAGE_BASE' \
+jq --arg K8S_IMAGE_BASE $K8S_IMAGE_BASE '.properties.orchestratorProfile.kubernetesConfig.kubernetesImageBase=$K8S_IMAGE_BASE' | \
+jq --arg NETWORK_PLUGIN $NETWORK_PLUGIN '.properties.orchestratorProfile.kubernetesConfig.networkPlugin=$NETWORK_PLUGIN' \
 > $AZURESTACK_CONFIGURATION_TEMP
 
 validate_and_restore_cluster_definition $AZURESTACK_CONFIGURATION_TEMP $AZURESTACK_CONFIGURATION || exit $ERR_API_MODEL
+
+if [ $OS_TYPE == "windows" ]; then
+    cat $AZURESTACK_CONFIGURATION | \
+    jq '.properties.agentPoolProfiles[0].count'=$WINDOWS_AGENT_COUNT | \
+    jq --arg WINDOWS_AGENT_SIZE $WINDOWS_AGENT_SIZE '.properties.agentPoolProfiles[0].vmSize=$WINDOWS_AGENT_SIZE' | \
+    jq --arg WINDOWS_AVAILABILITY_PROFILE $WINDOWS_AVAILABILITY_PROFILE '.properties.agentPoolProfiles[0].availabilityProfile=$WINDOWS_AVAILABILITY_PROFILE' | \
+    jq --arg WINDOWS_ADMIN_USERNAME $WINDOWS_ADMIN_USERNAME '.properties.windowsProfile.adminUsername=$WINDOWS_ADMIN_USERNAME' | \
+    jq --arg WINDOWS_ADMIN_PASSWORD $WINDOWS_ADMIN_PASSWORD '.properties.windowsProfile.adminUsername=$WINDOWS_ADMIN_PASSWORD' \
+    > $AZURESTACK_CONFIGURATION_TEMP
+
+    validate_and_restore_cluster_definition $AZURESTACK_CONFIGURATION_TEMP $AZURESTACK_CONFIGURATION || exit $ERR_API_MODEL
+
+elif [ $OS_TYPE == "linux" ]; then
+    cat $AZURESTACK_CONFIGURATION | \
+    jq '.properties.agentPoolProfiles[0].count'=$LINUX_AGENT_COUNT | \
+    jq --arg LINUX_AGENT_SIZE $LINUX_AGENT_SIZE '.properties.agentPoolProfiles[0].vmSize=$LINUX_AGENT_SIZE' | \
+    jq --arg LINUX_AVAILABILITY_PROFILE $LINUX_AVAILABILITY_PROFILE '.properties.agentPoolProfiles[0].availabilityProfile=$LINUX_AVAILABILITY_PROFILE' | \
+    jq --arg NODE_DISTRO $NODE_DISTRO '.properties.agentPoolProfiles[0].distro=$NODE_DISTRO' \
+    > $AZURESTACK_CONFIGURATION_TEMP
+
+    validate_and_restore_cluster_definition $AZURESTACK_CONFIGURATION_TEMP $AZURESTACK_CONFIGURATION || exit $ERR_API_MODEL
+
+elif [ $OS_TYPE == "hybrid" ]; then
+    cat $AZURESTACK_CONFIGURATION | \
+    jq '.properties.agentPoolProfiles[0].count'=$LINUX_AGENT_COUNT | \
+    jq --arg LINUX_AGENT_SIZE $LINUX_AGENT_SIZE '.properties.agentPoolProfiles[0].vmSize=$LINUX_AGENT_SIZE' | \
+    jq --arg LINUX_AVAILABILITY_PROFILE $LINUX_AVAILABILITY_PROFILE '.properties.agentPoolProfiles[0].availabilityProfile=$LINUX_AVAILABILITY_PROFILE' | \
+    jq --arg NODE_DISTRO $NODE_DISTRO '.properties.agentPoolProfiles[0].distro=$NODE_DISTRO' \
+    jq '.properties.agentPoolProfiles[1].count'=$WINDOWS_AGENT_COUNT | \
+    jq --arg WINDOWS_AGENT_SIZE $WINDOWS_AGENT_SIZE '.properties.agentPoolProfiles[1].vmSize=$WINDOWS_AGENT_SIZE' | \
+    jq --arg WINDOWS_AVAILABILITY_PROFILE $WINDOWS_AVAILABILITY_PROFILE '.properties.agentPoolProfiles[1].availabilityProfile=$WINDOWS_AVAILABILITY_PROFILE' | \
+    jq --arg WINDOWS_ADMIN_USERNAME $WINDOWS_ADMIN_USERNAME '.properties.windowsProfile.adminUsername=$WINDOWS_ADMIN_USERNAME' | \
+    jq --arg WINDOWS_ADMIN_PASSWORD $WINDOWS_ADMIN_PASSWORD '.properties.windowsProfile.adminUsername=$WINDOWS_ADMIN_PASSWORD' \
+    > $AZURESTACK_CONFIGURATION_TEMP
+
+    validate_and_restore_cluster_definition $AZURESTACK_CONFIGURATION_TEMP $AZURESTACK_CONFIGURATION || exit $ERR_API_MODEL
+fi
 
 log_level -i "Done building cluster definition."
 

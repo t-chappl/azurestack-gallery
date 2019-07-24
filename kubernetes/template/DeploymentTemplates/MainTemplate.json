@@ -9,6 +9,19 @@
         "description": "User name for the Linux Virtual Machines that are part of the Kubernetes cluster and DVM."
       }
     },
+    "windowsAdminUsername": {
+      "type": "string",
+      "defaultValue": "azureuser",
+      "metadata": {
+        "description": "User name for the Windows Virtual Machines that are part of the Kubernetes cluster."
+      }
+    },
+    "windowsAdminPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "Password for the Windows Virtual Machines that are part of the Kubernetes cluster."
+      }
+    },
     "sshPublicKey": {
       "metadata": {
         "description": "SSH public key used for auth to all Linux machines created as part of the the Kubernetes cluster and DVM."
@@ -21,17 +34,52 @@
         "description": "This must be a region-unique name e.g. k8s-12345. Try to chose it same as the resource group name as best practice."
       }
     },
-    "agentPoolProfileCount": {
+    "osType": {
+      "defaultValue": "linux",
+      "metadata": {
+        "description": "The node pool operating system(s)"
+      },
+      "type": "string"
+    },
+    "linuxPoolProfileCount": {
       "defaultValue": 3,
       "metadata": {
-        "description": "Kubernetes Node Pool Profile Count"
+        "description": "Kubernetes Linux Node Pool Profile Count"
       },
       "type": "int"
     },
-    "agentPoolProfileVMSize": {
+    "linuxPoolProfileVMSize": {
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The VMSize of Kubernetes node VMs"
+        "description": "The VMSize of Kubernetes node Linux VMs"
+      },
+      "type": "string"
+    },
+    "linuxAvailabilityProfile": {
+      "defaultValue": "AvailabilitySet",
+      "metadata": {
+        "description": "The Linux node pool availability profile"
+      },
+      "type": "string"
+    },
+    "windowsPoolProfileCount": {
+      "defaultValue": 3,
+      "metadata": {
+        "description": "Kubernetes Windows Node Pool Profile Count"
+      },
+      "type": "int"
+    },
+    "windowsPoolProfileVMSize": {
+      "defaultValue": "Standard_D2_v2",
+      "metadata": {
+        "description": "The VMSize of Kubernetes node Windows VMs"
+      },
+      "type": "string"
+    },
+    "windowsAvailabilityProfile": {
+      "defaultValue": "AvailabilitySet",
+      "metadata": {
+        "description": "The Windows node pool availability profile"
       },
       "type": "string"
     },
@@ -87,6 +135,13 @@
         "description": "This is the version for the Kubernetes Azure cloud provider. We would use a custom Kubernetes build specifically for Azure Stack for each version."
       }
     },
+    "networkPlugin": {
+      "type": "string",
+      "defaultValue": "kubenet",
+      "metadata": {
+        "description": "This is the network plugin that the Kubernetes cluster will be deployed with"
+      }
+    },
     "_artifactsLocation": {
       "type": "string",
       "metadata": {
@@ -124,7 +179,6 @@
     },
     "clusterDefinitionFileName": {
       "type": "string",
-      "defaultValue": "clusterDefinition.json",
       "metadata": {
         "description": "The name of the file containing the cluster definition"
       }
@@ -133,7 +187,7 @@
       "defaultValue": "ubuntu",
       "allowedValues": [
         "ubuntu",
-        "aks"
+        "aks-ubuntu-16.04"
       ],
       "metadata": {
         "description": "Node distro to be used to deploy Kubernetes on Azure Stack."
@@ -148,36 +202,7 @@
       }
     }
   },
-  "variables": {
-    "resourceGroupName": "[resourceGroup().name]",
-    "dnsNameForPublicIP": "[toLower(concat('vmd-dns', parameters('masterProfileDnsPrefix')))]",
-    "location": "[resourceGroup().location]",
-    "imagePublisher": "Canonical",
-    "imageOffer": "UbuntuServer",
-    "imageSku": "16.04-LTS",
-    "imageVersion": "latest",
-    "vmSize": "Standard_D2_v2",
-    "OSDiskName": "osdisk",
-    "nicName": "[concat('vmd-vnic', uniqueString(resourceGroup().id))]",
-    "addressPrefix": "10.0.0.0/24",
-    "subnetName": "mySubnet",
-    "subnetPrefix": "10.0.0.0/24",
-    "storageAccountName": "[concat('vmdsa', uniquestring(resourceGroup().id))]",
-    "storageAccountType": "Standard_LRS",
-    "publicIPAddressName": "[concat('vmd-publicIP', uniqueString(resourceGroup().id))]",
-    "publicIPAddressType": "Static",
-    "vmStorageAccountContainerName": "vhds",
-    "vmName": "[concat('vmd-', uniqueString(resourceGroup().id))]",
-    "virtualNetworkName": "[concat('vmd-vnet-', uniqueString(resourceGroup().id))]",
-    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
-    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
-    "networkSecurityGroupName": "[tolower(concat('vmd-nsg',uniquestring(resourceGroup().id)))]",
-    "sshKeyPath": "[concat('/home/',parameters('linuxAdminUsername'),'/.ssh/authorized_keys')]",
-    "tenantSubscriptionId": "[subscription().subscriptionId]",
-    "scriptName": "script",
-    "singleQuote": "'",
-    "scriptParameters": "[concat('IDENTITY_SYSTEM=','\"',parameters('identitySystem'),'\"',' NODE_DISTRO=','\"',parameters('nodeDistro'),'\"',' RESOURCE_GROUP_NAME=','\"',variables('resourceGroupName'),'\"',' PUBLICIP_DNS=','\"',variables('dnsNameForPublicIP'),'\"' ,' TENANT_ID=','\"',subscription().tenantId,'\"' ,' TENANT_SUBSCRIPTION_ID=','\"',variables('tenantSubscriptionId'),'\"',' ADMIN_USERNAME=','\"',parameters('linuxAdminUsername'),'\"',' MASTER_DNS_PREFIX=','\"',parameters('masterProfileDnsPrefix'),'\"' ,' AGENT_COUNT=','\"',parameters('agentPoolProfileCount'),'\"' ,' AGENT_SIZE=','\"',parameters('agentPoolProfileVMSize'),'\"' ,' MASTER_COUNT=','\"',parameters('masterPoolProfileCount'),'\"',' MASTER_SIZE=','\"',parameters('masterPoolProfileVMSize'),'\"' ,' SPN_CLIENT_ID=','\"',parameters('servicePrincipalClientId'),'\"' ,' SPN_CLIENT_SECRET=','\"',parameters('servicePrincipalClientSecret'),'\"' ,' K8S_AZURE_CLOUDPROVIDER_VERSION=','\"',parameters('kubernetesAzureCloudProviderVersion'),'\"' ,' REGION_NAME=','\"',variables('location'),'\"' ,' SSH_PUBLICKEY=','\"',parameters('sshPublicKey'),'\"' ,' STORAGE_PROFILE=','\"',parameters('storageProfile'),'\"')]"
-  },
+  "variables": {},
   "resources": [
     {
       "apiVersion": "2015-01-01",
@@ -193,17 +218,38 @@
           "linuxAdminUsername": {
             "value": "[parameters('linuxAdminUsername')]"
           },
+          "windowsAdminUsername": {
+            "value": "[parameters('windowsAdminUsername')]"
+          },
+          "windowsAdminPassword": {
+            "value": "[parameters('windowsAdminPassword')]"
+          },
           "sshPublicKey": {
             "value": "[parameters('sshPublicKey')]"
           },
           "masterProfileDnsPrefix": {
             "value": "[parameters('masterProfileDnsPrefix')]"
           },
-          "agentPoolProfileCount": {
-            "value": "[parameters('agentPoolProfileCount')]"
+          "osType": {
+            "value": "[parameters('osType')]"
           },
-          "agentPoolProfileVMSize": {
-            "value": "[parameters('agentPoolProfileVMSize')]"
+          "linuxPoolProfileCount": {
+            "value": "[parameters('linuxPoolProfileCount')]"
+          },
+          "linuxPoolProfileVMSize": {
+            "value": "[parameters('linuxPoolProfileVMSize')]"
+          },
+          "linuxAvailabilityProfile": {
+            "value": "[parameters('linuxAvailabilityProfile')]"
+          },
+          "windowsPoolProfileCount": {
+            "value": "[parameters('linuxPoolProfileCount')]"
+          },
+          "windowsPoolProfileVMSize": {
+            "value": "[parameters('linuxPoolProfileVMSize')]"
+          },
+          "windowsAvailabilityProfile": {
+            "value": "[parameters('windowsAvailabilityProfile')]"
           },
           "masterPoolProfileCount": {
             "value": "[parameters('masterPoolProfileCount')]"
@@ -222,6 +268,9 @@
           },
           "kubernetesAzureCloudProviderVersion": {
             "value": "[parameters('kubernetesAzureCloudProviderVersion')]"
+          },
+          "networkPlugin": {
+            "value": "[parameters('networkPlugin')]"
           },
           "identitySystem": {
             "value": "[parameters('identitySystem')]"

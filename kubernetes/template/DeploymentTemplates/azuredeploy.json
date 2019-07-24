@@ -9,6 +9,19 @@
         "description": "User name for the Linux Virtual Machines that are part of the Kubernetes cluster and DVM."
       }
     },
+    "windowsAdminUsername": {
+      "type": "string",
+      "defaultValue": "azureuser",
+      "metadata": {
+        "description": "User name for the Windows Virtual Machines that are part of the Kubernetes cluster."
+      }
+    },
+    "windowsAdminPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "Password for the Windows Virtual Machines that are part of the Kubernetes cluster."
+      }
+    },
     "sshPublicKey": {
       "metadata": {
         "description": "SSH public key used for auth to all Linux machines created as part of the the Kubernetes cluster and DVM."
@@ -21,17 +34,52 @@
         "description": "This must be a region-unique name e.g. k8s-12345. Try to chose it same as the resource group name as best practice."
       }
     },
-    "agentPoolProfileCount": {
+    "osType": {
+      "defaultValue": "linux",
+      "metadata": {
+        "description": "The node pool operating system(s)"
+      },
+      "type": "string"
+    },
+    "linuxPoolProfileCount": {
       "defaultValue": 3,
       "metadata": {
-        "description": "Kubernetes Node Pool Profile Count"
+        "description": "Kubernetes Linux Node Pool Profile Count"
       },
       "type": "int"
     },
-    "agentPoolProfileVMSize": {
+    "linuxPoolProfileVMSize": {
       "defaultValue": "Standard_D2_v2",
       "metadata": {
-        "description": "The VMSize of Kubernetes node VMs"
+        "description": "The VMSize of Kubernetes node Linux VMs"
+      },
+      "type": "string"
+    },
+    "linuxAvailabilityProfile": {
+      "defaultValue": "AvailabilitySet",
+      "metadata": {
+        "description": "The Linux node pool availability profile"
+      },
+      "type": "string"
+    },
+    "windowsPoolProfileCount": {
+      "defaultValue": 3,
+      "metadata": {
+        "description": "Kubernetes Windows Node Pool Profile Count"
+      },
+      "type": "int"
+    },
+    "windowsPoolProfileVMSize": {
+      "defaultValue": "Standard_D2_v2",
+      "metadata": {
+        "description": "The VMSize of Kubernetes node Windows VMs"
+      },
+      "type": "string"
+    },
+    "windowsAvailabilityProfile": {
+      "defaultValue": "AvailabilitySet",
+      "metadata": {
+        "description": "The Windows node pool availability profile"
       },
       "type": "string"
     },
@@ -86,6 +134,13 @@
         "description": "This is the version for the Kubernetes Azure cloud provider. We would use a custom Kubernetes build specifically for Azure Stack for each version."
       }
     },
+    "networkPlugin": {
+      "type": "string",
+      "defaultValue": "kubenet",
+      "metadata": {
+        "description": "This is the network plugin that the Kubernetes cluster will be deployed with"
+      }
+    },
     "aksEngineBaseURL": {
       "type": "string",
       "defaultValue": "https://github.com/Azure/aks-engine/releases/download",
@@ -116,7 +171,6 @@
     },
     "clusterDefinitionFileName": {
       "type": "string",
-      "defaultValue": "clusterDefinition.json",
       "metadata": {
         "description": "The name of the file containing the cluster definition"
       }
@@ -132,7 +186,7 @@
       "defaultValue": "ubuntu",
       "allowedValues": [
         "ubuntu",
-        "aks"
+        "aks-ubuntu-16.04"
       ],
       "metadata": {
         "description": "Node distro to be used to deploy Kubernetes on Azure Stack."
@@ -168,7 +222,7 @@
     "tenantSubscriptionId": "[subscription().subscriptionId]",
     "scriptName": "script",
     "singleQuote": "'",
-    "scriptParameters": "[concat('IDENTITY_SYSTEM=','\"',parameters('identitySystem'),'\"',' NODE_DISTRO=','\"',parameters('nodeDistro'),'\"',' RESOURCE_GROUP_NAME=','\"',variables('resourceGroupName'),'\"',' PUBLICIP_DNS=','\"',variables('dnsNameForPublicIP'),'\"' ,' TENANT_ID=','\"',subscription().tenantId,'\"' ,' TENANT_SUBSCRIPTION_ID=','\"',variables('tenantSubscriptionId'),'\"',' ADMIN_USERNAME=','\"',parameters('linuxAdminUsername'),'\"',' MASTER_DNS_PREFIX=','\"',parameters('masterProfileDnsPrefix'),'\"' ,' AGENT_COUNT=','\"',parameters('agentPoolProfileCount'),'\"' ,' AGENT_SIZE=','\"',parameters('agentPoolProfileVMSize'),'\"' ,' MASTER_COUNT=','\"',parameters('masterPoolProfileCount'),'\"',' MASTER_SIZE=','\"',parameters('masterPoolProfileVMSize'),'\"' ,' SPN_CLIENT_ID=','\"',parameters('servicePrincipalClientId'),'\"' ,' SPN_CLIENT_SECRET=','\"',parameters('servicePrincipalClientSecret'),'\"' ,' K8S_AZURE_CLOUDPROVIDER_VERSION=','\"',parameters('kubernetesAzureCloudProviderVersion'),'\"' ,' REGION_NAME=','\"',variables('location'),'\"' ,' SSH_PUBLICKEY=','\"',parameters('sshPublicKey'),'\"' ,' STORAGE_PROFILE=','\"',parameters('storageProfile'),'\"',' AKSE_BASE_URL=','\"',parameters('aksEngineBaseURL'), '\"', ' AKSE_RELEASE_VERSION=','\"',parameters('aksEngineReleaseVersion'),'\"',' GALLERY_REPO=','\"',parameters('galleryRepository'),'\"',' GALLERY_BRANCH=','\"',parameters('galleryBranch'),'\"',' DEFINITION_TEMPLATE_NAME=','\"',parameters('clusterDefinitionFileName'),'\"',' K8S_IMAGE_BASE=','\"',parameters('kubernetesImageBase'),'\"')]"
+    "scriptParameters": "[concat('IDENTITY_SYSTEM=','\"',parameters('identitySystem'),'\"',' NODE_DISTRO=','\"',parameters('nodeDistro'),'\"',' RESOURCE_GROUP_NAME=','\"',variables('resourceGroupName'),'\"',' PUBLICIP_DNS=','\"',variables('dnsNameForPublicIP'),'\"' ,' TENANT_ID=','\"',subscription().tenantId,'\"' ,' TENANT_SUBSCRIPTION_ID=','\"',variables('tenantSubscriptionId'),'\"',' LINUX_ADMIN_USERNAME=','\"',parameters('linuxAdminUsername'),'\"',' WINDOWS_ADMIN_USERNAME=','\"',parameters('windowsAdminUsername'),'\"',' WINDOWS_ADMIN_PASSWORD=','\"',parameters('windowsAdminPassword'),'\"',' MASTER_DNS_PREFIX=','\"',parameters('masterProfileDnsPrefix'),'\"',' OS_TYPE=','\"',parameters('osType'),'\"',' LINUX_AGENT_COUNT=','\"',parameters('linuxPoolProfileCount'),'\"' ,' LINUX_AGENT_SIZE=','\"',parameters('linuxPoolProfileVMSize'),'\"',' LINUX_AVAILABILITY_PROFILE=','\"',parameters('linuxAvailabilityProfile'),'\"',' WINDOWS_AGENT_COUNT=','\"',parameters('windowsPoolProfileCount'),'\"' ,' WINDOWS_AGENT_SIZE=','\"',parameters('windowsPoolProfileVMSize'),'\"' ,' WINDOWS_AVAILABILITY_PROFILE=','\"',parameters('windowsAvailabilityProfile'),'\"',' MASTER_COUNT=','\"',parameters('masterPoolProfileCount'),'\"',' MASTER_SIZE=','\"',parameters('masterPoolProfileVMSize'),'\"' ,' SPN_CLIENT_ID=','\"',parameters('servicePrincipalClientId'),'\"' ,' SPN_CLIENT_SECRET=','\"',parameters('servicePrincipalClientSecret'),'\"' ,' K8S_AZURE_CLOUDPROVIDER_VERSION=','\"',parameters('kubernetesAzureCloudProviderVersion'),'\"' ,' REGION_NAME=','\"',variables('location'),'\"' ,' SSH_PUBLICKEY=','\"',parameters('sshPublicKey'),'\"' ,' STORAGE_PROFILE=','\"',parameters('storageProfile'),'\"',' AKSE_BASE_URL=','\"',parameters('aksEngineBaseURL'), '\"', ' AKSE_RELEASE_VERSION=','\"',parameters('aksEngineReleaseVersion'),'\"',' GALLERY_REPO=','\"',parameters('galleryRepository'),'\"',' GALLERY_BRANCH=','\"',parameters('galleryBranch'),'\"',' DEFINITION_TEMPLATE_NAME=','\"',parameters('clusterDefinitionFileName'),'\"',' K8S_IMAGE_BASE=','\"',parameters('kubernetesImageBase'),'\"',' NETWORK_PLUGIN=','\"',parameters('networkPlugin'),'\"')]"
   },
   "resources": [
     {
