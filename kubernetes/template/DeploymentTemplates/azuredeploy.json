@@ -171,6 +171,7 @@
     },
     "clusterDefinitionFileName": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "The name of the file containing the cluster definition"
       }
