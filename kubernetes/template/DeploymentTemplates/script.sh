@@ -378,7 +378,7 @@ if [ $OS_TYPE == "windows" ]; then
     jq --arg WINDOWS_AGENT_SIZE $WINDOWS_AGENT_SIZE '.properties.agentPoolProfiles[0].vmSize=$WINDOWS_AGENT_SIZE' | \
     jq --arg WINDOWS_AVAILABILITY_PROFILE $WINDOWS_AVAILABILITY_PROFILE '.properties.agentPoolProfiles[0].availabilityProfile=$WINDOWS_AVAILABILITY_PROFILE' | \
     jq --arg WINDOWS_ADMIN_USERNAME $WINDOWS_ADMIN_USERNAME '.properties.windowsProfile.adminUsername=$WINDOWS_ADMIN_USERNAME' | \
-    jq --arg WINDOWS_ADMIN_PASSWORD $WINDOWS_ADMIN_PASSWORD '.properties.windowsProfile.adminUsername=$WINDOWS_ADMIN_PASSWORD' \
+    jq --arg WINDOWS_ADMIN_PASSWORD $WINDOWS_ADMIN_PASSWORD '.properties.windowsProfile.adminPassword=$WINDOWS_ADMIN_PASSWORD' \
     > $AZURESTACK_CONFIGURATION_TEMP
 
     validate_and_restore_cluster_definition $AZURESTACK_CONFIGURATION_TEMP $AZURESTACK_CONFIGURATION || exit $ERR_API_MODEL
@@ -403,7 +403,7 @@ elif [ $OS_TYPE == "hybrid" ]; then
     jq --arg WINDOWS_AGENT_SIZE $WINDOWS_AGENT_SIZE '.properties.agentPoolProfiles[1].vmSize=$WINDOWS_AGENT_SIZE' | \
     jq --arg WINDOWS_AVAILABILITY_PROFILE $WINDOWS_AVAILABILITY_PROFILE '.properties.agentPoolProfiles[1].availabilityProfile=$WINDOWS_AVAILABILITY_PROFILE' | \
     jq --arg WINDOWS_ADMIN_USERNAME $WINDOWS_ADMIN_USERNAME '.properties.windowsProfile.adminUsername=$WINDOWS_ADMIN_USERNAME' | \
-    jq --arg WINDOWS_ADMIN_PASSWORD $WINDOWS_ADMIN_PASSWORD '.properties.windowsProfile.adminUsername=$WINDOWS_ADMIN_PASSWORD' \
+    jq --arg WINDOWS_ADMIN_PASSWORD $WINDOWS_ADMIN_PASSWORD '.properties.windowsProfile.adminPassword=$WINDOWS_ADMIN_PASSWORD' \
     > $AZURESTACK_CONFIGURATION_TEMP
 
     validate_and_restore_cluster_definition $AZURESTACK_CONFIGURATION_TEMP $AZURESTACK_CONFIGURATION || exit $ERR_API_MODEL
