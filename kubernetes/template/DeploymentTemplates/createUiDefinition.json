@@ -734,6 +734,7 @@
         "name": "clusterDefinitionFileName",
         "type": "Microsoft.Common.TextBox",
         "label": "Cluster definition file name",
+        "defaultValue": "",
         "toolTip": "The name of the file containing the cluster definition",
         "constraints": {
           "required": true
