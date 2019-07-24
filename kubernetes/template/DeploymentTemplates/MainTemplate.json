@@ -243,10 +243,10 @@
             "value": "[parameters('linuxAvailabilityProfile')]"
           },
           "windowsPoolProfileCount": {
-            "value": "[parameters('linuxPoolProfileCount')]"
+            "value": "[parameters('windowsPoolProfileCount')]"
           },
           "windowsPoolProfileVMSize": {
-            "value": "[parameters('linuxPoolProfileVMSize')]"
+            "value": "[parameters('windowsPoolProfileVMSize')]"
           },
           "windowsAvailabilityProfile": {
             "value": "[parameters('windowsAvailabilityProfile')]"
