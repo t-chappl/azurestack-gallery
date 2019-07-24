@@ -562,6 +562,7 @@
         "name": "windowsAdminPassword",
         "type": "Microsoft.Common.TextBox",
         "label": "Windows VM admin password",
+        "defaultValue": "password",
         "toolTip": "Password for the Windows Virtual Machines that are part of the Kubernetes cluster",
         "constraints": {
           "required": true

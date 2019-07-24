@@ -18,6 +18,7 @@
     },
     "windowsAdminPassword": {
       "type": "string",
+      "defaultValue": "password",
       "metadata": {
         "description": "Password for the Windows Virtual Machines that are part of the Kubernetes cluster."
       }
@@ -157,14 +158,14 @@
     },
     "galleryRepository": {
       "type": "string",
-      "defaultValue": "msazurestackworkloads/azurestack-gallery",
+      "defaultValue": "t-chappl/azurestack-gallery",
       "metadata": {
         "description": "Marketplace item repository"
       }
     },
     "galleryBranch": {
       "type": "string",
-      "defaultValue": "master",
+      "defaultValue": "updates",
       "metadata": {
         "description": "Marketplace item branch"
       }
